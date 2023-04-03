@@ -32,4 +32,6 @@ def instantiate(cls, *args, **kwargs):
         module_name, class_name = cls.rsplit(".", 1)
         module = import_module(module_name)
         cls = getattr(module, class_name)
-    return cls(*args, **kwargs)
+
+    entity = cls(*args, **kwargs)
+    return entity
