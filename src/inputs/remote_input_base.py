@@ -4,7 +4,7 @@ import typing
 
 from inputs.input_base import InputBase
 from utils.feature import FeatureDict
-from utils.remote_payload import remoteFetch
+from utils.remote_payload import RemotePayload, remoteFetch
 
 
 class RemoteInputBase(InputBase):
@@ -40,8 +40,14 @@ class RemoteInputBase(InputBase):
         data_buffer = self.client_socket.recv(1024)
         if not data_buffer:
             raise ConnectionResetError("服务器断开连接。")
+
         data = json.loads(data_buffer.decode())
-        self.cached_data, self.cached_timestamp = data["data"], data["timestamp"]
+        response_payload = typing.cast(RemotePayload, data)
+
+        self.cached_data, self.cached_timestamp = (
+            response_payload["data"],
+            response_payload["timestamp"],
+        )
 
         return self.cached_timestamp == current_time
 
