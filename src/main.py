@@ -1,11 +1,15 @@
 import asyncio
 import signal
+import typing
 from datetime import datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+from inputs.input_base import InputBase
 
-async def poll_controller():
+
+# 循环的每次执行
+async def poll_controller(inputs_: typing.List[InputBase], functions_):
     try:
         now = datetime.now()
         print(f"poll_controller {datetime.now()} {now}")
@@ -14,9 +18,14 @@ async def poll_controller():
 
 
 def main():
+    # 初始化所有类
+
+    # 创建异步循环
     loop = asyncio.get_event_loop()
     scheduler = AsyncIOScheduler(event_loop=loop)
-    scheduler.add_job(poll_controller, "interval", seconds=0.5, max_instances=3)
+    scheduler.add_job(
+        poll_controller, "interval", seconds=0.5, max_instances=3, args={}
+    )
 
     scheduler.start()
 
