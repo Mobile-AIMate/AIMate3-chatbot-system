@@ -1,3 +1,3 @@
 from inputs.remote_input_demo import RemoteInputDemo
 
-__all__ = ["RemoteInputDemo"]
+__all__ = ["RemoteInputDemo", "remote-ASR"]
