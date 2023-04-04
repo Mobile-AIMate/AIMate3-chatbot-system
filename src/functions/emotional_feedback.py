@@ -36,7 +36,7 @@ class EmotionalFeedback(FunctionBase):
             'Surprise':'我很高兴能为你带来这种惊喜，让我们一起分享这种美好的时刻。',
             'Sad':'主人，你看起来好像很难过，如果你想分享你的感受，我愿意倾听你的故事。',
             'Fear':'主人，不要害怕，我会一直在你身边陪伴你',
-            'Neutral':'主人，你可以来和我一起玩呀',
+            'Neutral':'主人，你快来和我一起玩呀',
         }
         response = random.choice(emotional_feedback_text[features["data"]])  # 使用情感label作为key
         return response
