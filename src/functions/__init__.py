@@ -1,4 +1,4 @@
 from functions.function_demo import FunctionDemo
-from functions.function_HandGesture import remote-HandGesture
+from functions.function_HandGesture import remoteHandGesture
 
-__all__ = ["FunctionDemo", "remote-ASR","remote-HandGesture"]
+__all__ = ["FunctionDemo", "remoteHandGesture"]

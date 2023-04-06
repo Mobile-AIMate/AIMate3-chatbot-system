@@ -4,7 +4,7 @@ from functions.function_base import FunctionBase
 from utils.feature import FeatureDict
 
 
-class remote-HandGesture(FunctionBase):
+class remoteHandGesture(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
 
