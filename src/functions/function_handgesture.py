@@ -8,9 +8,13 @@ class FunctionHandGesture(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
         self.handgesture_response = {"good": "好", "bad": "坏", "5": "挥手", "2": "耶"}
+        self.last_call_time = 0
+        self.interval_time = 20
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        print(features)
+        if current_time - self.last_call_time < self.interval_time:
+            return False
+
         my_features = [
             feature for feature in features if feature["name"] == "HandGesture"
         ]
@@ -32,4 +36,5 @@ class FunctionHandGesture(FunctionBase):
         response = self.handgesture_response[
             my_feature["data"]["gesture"]
         ]  # 使用label作为key
+        self.last_call_time = my_feature["timestamp"]
         return response
