@@ -55,7 +55,7 @@ def main():
     scheduler.add_job(
         poll_controller,
         "interval",
-        seconds=0.5,
+        seconds=0.1,
         max_instances=3,
         args=(inputs_, functions_),
     )
