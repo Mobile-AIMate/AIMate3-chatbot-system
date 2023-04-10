@@ -7,7 +7,17 @@ import time
 tts_server_url = 'http://localhost:21452'
 default_audio_path = '~/project/PaddleSpeech/demos/TTSArmLinux/output/tts.wav'
 
+def singleton(cls):
+    _instance = {}
 
+    def inner():
+        if cls not in _instance:
+            _instance[cls] = cls()
+        return _instance[cls]
+    return inner
+
+
+@singleton
 class TTS:
     
     '''
@@ -92,3 +102,13 @@ class TTS:
                 self.thread_play_audio.join()
             time.sleep(0.1)
 
+
+if __name__ == '__main__':
+    tts1 = TTS()
+    tts2 = TTS()
+    print(id(tts1), id(tts2))
+    while True:
+        s = input(">> ")
+        if s == 'q':
+            break
+        tts1.run(s)
