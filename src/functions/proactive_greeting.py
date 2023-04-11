@@ -16,6 +16,9 @@ class ProactiveGreeting(FunctionBase):
         super().__init__(priority=0)
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
+        if not super().check(features, current_time):
+            return False
+
         print(features)
         my_features = [
             feature
@@ -33,6 +36,8 @@ class ProactiveGreeting(FunctionBase):
             return False
 
     def call(self, features: typing.List[FeatureDict], current_time: int):
+        super().call(features, current_time)
+
         print(f"process feature in ProactiveGreeting at {current_time}")
         proactive_greeting_text = [
             "主人，您的宠物机器人正在这里等您呢！快来和我玩玩吧！",

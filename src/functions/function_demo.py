@@ -24,4 +24,6 @@ class FunctionDemo(FunctionBase):
             return False
 
     def call(self, features: typing.List[FeatureDict], current_time: int):
+        super().call(features, current_time)
+
         print(f"process feature in FunctionDemo at {current_time}")

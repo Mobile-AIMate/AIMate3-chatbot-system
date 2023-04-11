@@ -16,6 +16,9 @@ class WakeUpGreeting(FunctionBase):
         super().__init__(priority=0)
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
+        if not super().check(features, current_time):
+            return False
+
         print(features)
         my_features = [
             feature for feature in features if feature["name"] == "asr"  # 获取语音识别结果
@@ -31,6 +34,8 @@ class WakeUpGreeting(FunctionBase):
             return False
 
     def call(self, features: typing.List[FeatureDict], current_time: int):
+        super().call(features, current_time)
+
         print(f"process feature in WakeUpGreeting at {current_time}")
         wake_up_text = [
             "主人我在，有什么可以帮助您的吗？",

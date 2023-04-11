@@ -16,11 +16,12 @@ class EmotionalFeedback(FunctionBase):
         super().__init__(priority=0)
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
+        if not super().check(features, current_time):
+            return False
+
         print(features)
         my_features = [
-            feature
-            for feature in features
-            if feature["name"] == ""  # 情绪识别结果
+            feature for feature in features if feature["name"] == ""  # 情绪识别结果
         ]
 
         if len(my_features) == 1:
@@ -33,6 +34,8 @@ class EmotionalFeedback(FunctionBase):
             return False
 
     def call(self, features: typing.List[FeatureDict], current_time: int):
+        super().call(features, current_time)
+
         print(f"process feature in EmotionalFeedback at {current_time}")
         emotional_feedback_text = {
             "Angry": "主人，我注意到你现在感到很生气。如果你想发泄，可以尝试向我说出你的感受，我会一直在你身边支持你的",
