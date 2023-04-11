@@ -1,3 +1,6 @@
 [submodule "external/handguesture"]
 	path = external/handgesture
 	url = git@47.108.143.39:AI_mate/aimate3/handgesture.git
+[submodule "external/emotionrecognition"]
+	path = external/emotionrecognition
+	url = git@47.108.143.39:AI_mate/aimate3/emotionrecognition.git
