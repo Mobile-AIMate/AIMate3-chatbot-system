@@ -20,7 +20,7 @@ class EmotionalFeedback(FunctionBase):
         my_features = [
             feature
             for feature in features
-            if feature["name"] == "face-detection"  # 情绪识别结果
+            if feature["name"] == ""  # 情绪识别结果
         ]
 
         if len(my_features) == 1:
@@ -43,6 +43,6 @@ class EmotionalFeedback(FunctionBase):
             "Neutral": "主人，你快来和我一起玩呀",
         }
         response = random.choice(
-            emotional_feedback_text[features["data"]]
+            emotional_feedback_text[features["data"][0]["emotion_label"]]
         )  # 使用情感label作为key
         return response
