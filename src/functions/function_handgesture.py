@@ -14,9 +14,6 @@ class FunctionHandGesture(FunctionBase):
         self.tts = TTS()
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        if not super().check(features, current_time):
-            return False
-
         if current_time - self.last_call_time < self.interval_time:
             return False
 
