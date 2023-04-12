@@ -27,6 +27,7 @@ class TTS:
     Usage:
     ```python
     tts = TTS()
+    status = tts.check()
     res = tts.run('你好')
     ```
     """
@@ -52,6 +53,23 @@ class TTS:
         self.thread_detect.setDaemon(True)
         self.thread_detect.start()
 
+    def check(self) -> int:
+
+        """
+        检查 tts 状态。\n
+        返回值：\n
+        - 0 空闲状态
+        - 1 正在 tts 中
+        - 2 正在播放音频中
+        """
+
+        if self.thread_text_to_audio.is_alive():
+            return 1
+        elif self.thread_play_audio.is_alive():
+            return 2
+
+        return 0
+
     def run(self, text: str) -> int:
 
         """
@@ -62,17 +80,16 @@ class TTS:
         - 0 成功，开始运行
         - 1 失败，正在 tts 中
         - 2 失败，正在播放音频中
+        - 3 失败，输入文本有误或为空
         """
 
-        if self.thread_text_to_audio.is_alive():
-            # if hasattr(self, 'queue'):
-            #     self.queue.put(text)
-            return 1
-        elif self.thread_play_audio.is_alive():
-            return 2
+        status = self.check()
 
+        if status:
+            return status
+        
         self.text = text
-        return 0
+        return status
 
     def text_to_audio(self, text: str):
         try:
