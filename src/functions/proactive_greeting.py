@@ -21,14 +21,12 @@ class ProactiveGreeting(FunctionBase):
 
         print(features)
         my_features = [
-            feature
-            for feature in features
-            if feature["name"] == "face-detection"  # 人脸检测结果
+            feature for feature in features if feature["name"] == "EmotionRecognition"  # 人脸检测结果
         ]
 
         if len(my_features) == 1:
             """如果是刚得到的，就接受，否则拒绝"""
-            if current_time <= my_features[0]["timestamp"]:
+            if current_time <= my_features[0]["timestamp"] and len(my_features[0]["data"]): # 判断是否检测到人脸
                 return True
             else:
                 return False
@@ -45,4 +43,5 @@ class ProactiveGreeting(FunctionBase):
             "哇，主人回来了！我和你玩个小游戏吧！",
         ]
         response = random.choice(proactive_greeting_text)
+        print(response)
         return response

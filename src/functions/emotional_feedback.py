@@ -1,6 +1,6 @@
 import random
 import typing
-
+from external.tts import TTS
 from functions.function_base import FunctionBase
 from utils.feature import FeatureDict
 
@@ -13,7 +13,8 @@ class EmotionalFeedback(FunctionBase):
     """
 
     def __init__(self) -> None:
-        super().__init__(priority=0)
+        super().__init__(priority=3)
+        self.tts = TTS()
 
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
         if not super().check(features, current_time):
@@ -21,12 +22,12 @@ class EmotionalFeedback(FunctionBase):
 
         print(features)
         my_features = [
-            feature for feature in features if feature["name"] == ""  # 情绪识别结果
+            feature for feature in features if feature["name"] == "EmotionRecognition"  # 情绪识别结果
         ]
 
         if len(my_features) == 1:
             """如果是刚得到的，就接受，否则拒绝"""
-            if current_time <= my_features[0]["timestamp"]:
+            if current_time <= my_features[0]["timestamp"] and len(my_features[0]["data"]): # 有人脸就有情绪
                 return True
             else:
                 return False
@@ -45,7 +46,14 @@ class EmotionalFeedback(FunctionBase):
             "Fear": "主人，不要害怕，我会一直在你身边陪伴你",
             "Neutral": "主人，你快来和我一起玩呀",
         }
-        response = random.choice(
-            emotional_feedback_text[features["data"][0]["emotion_label"]]
-        )  # 使用情感label作为key
+        this_feature = [
+            feature for feature in features if feature["name"] == "EmotionRecognition"  # 情绪识别结果
+        ]
+        response = emotional_feedback_text[this_feature[0]["data"][0]["emotion_label"]] # this_feature[0]["data"] = [{"emotion_label":""}]
+          # 使用情感label作为key
+        print(response)
+        print(f'======{this_feature[0]["data"][0]["emotion_label"]}======')
+        res = self.tts.run(response)
+        return res
+        # print(response)
         return response
