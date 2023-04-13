@@ -9,4 +9,4 @@
 	url = git@47.108.143.39:AI_mate/aimate3/remotetts.git
 [submodule "external/asr"]
 	path = external/asr
-	url = http://gitlab.crowdhmt.com/AI_mate/aimate3/remoteasr
+	url = git@47.108.143.39:AI_mate/aimate3/remoteasr.git
