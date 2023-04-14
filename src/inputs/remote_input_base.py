@@ -56,6 +56,8 @@ class RemoteInputBase(InputBase):
     ) -> None:
         self.host, self.port = server_host, server_port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.client_socket.setblocking(False)
+        # self.client_socket.settimeout(0.05)
 
         try:
             self.client_socket.connect((self.host, self.port))
@@ -63,5 +65,7 @@ class RemoteInputBase(InputBase):
             print(f"Failed to connect {e}")
 
     def __del__(self):
+        payload = {'type': 'cmd', 'cmd': 'exit'}
+        self.client_socket.send(json.dumps(payload).encode())
         self.client_socket.close()
         super().__del__()

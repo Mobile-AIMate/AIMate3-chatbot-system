@@ -10,12 +10,16 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 GLOBAL_TIMESTAMP = 0
 
-class RemoteASRInput():
+# main:
+# inputdemo.get_features(timestamp)  # get and update timestamp
+
+
+class RemoteInputDemo():
     def __init__(
         self,
         server_host: str = socket.gethostname(),
         server_port: int = 0,
-        feature_name: str = "remote-ASR",
+        feature_name: str = "remote-base",
     ) -> None:
         super().__init__()
         self.feature_name = feature_name
@@ -83,4 +87,56 @@ class RemoteASRInput():
         payload = {'type': 'cmd', 'cmd': 'exit'}
         self.client_socket.send(json.dumps(payload).encode())
         self.client_socket.close()
-        
+
+
+
+# 循环的每次执行
+async def poll_controller(
+    inputs_, functions_
+):
+    global GLOBAL_TIMESTAMP
+    try:
+        current_timestamp = GLOBAL_TIMESTAMP
+
+        input_features_lists = [inp.get_features(current_timestamp) for inp in inputs_]
+
+        print(f"poll_controller {datetime.now()} {current_timestamp}")
+        GLOBAL_TIMESTAMP += 1
+    except asyncio.CancelledError:
+        pass
+
+
+def main():
+    # 初始化所有类
+    inputs_ = [RemoteInputDemo(server_port=2345)]
+    functions_ = []
+
+    # 创建异步循环
+    loop = asyncio.get_event_loop()
+    scheduler = AsyncIOScheduler(event_loop=loop)
+    scheduler.add_job(
+        poll_controller,
+        "interval",
+        seconds=0.1,
+        max_instances=3,
+        args=(inputs_, functions_),
+    )
+
+    scheduler.start()
+
+    def close_all():
+        print("exit.")
+        for job in scheduler.get_jobs():
+            job.remove()
+        loop.stop()
+        scheduler.shutdown()
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(sig, close_all)
+
+    loop.run_forever()
+    loop.close()
+
+
+if __name__ == "__main__":
+    main()
