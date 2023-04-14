@@ -1,7 +1,14 @@
 from revChatGPT.V1 import Chatbot
 import time
+import json
+
+f = open('./token.json','r')
+
+content = f.read()
+token = content['access_token']
+
 chatbot = Chatbot(config={
-"access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1UaEVOVUpHTkVNMVFURTRNMEZCTWpkQ05UZzVNRFUxUlRVd1FVSkRNRU13UmtGRVFrRXpSZyJ9.eyJodHRwczovL2FwaS5vcGVuYWkuY29tL3Byb2ZpbGUiOnsiZW1haWwiOiJhaW1hdGUxMjJAeWFob28uY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJodHRwczovL2FwaS5vcGVuYWkuY29tL2F1dGgiOnsidXNlcl9pZCI6InVzZXItQUpvVzZEckxZOTgzc3BsVzFQT0ZqZUlqIn0sImlzcyI6Imh0dHBzOi8vYXV0aDAub3BlbmFpLmNvbS8iLCJzdWIiOiJhdXRoMHw2NDJhNjJlYjRkMWMyZWMyNmY2OWNlMjAiLCJhdWQiOlsiaHR0cHM6Ly9hcGkub3BlbmFpLmNvbS92MSIsImh0dHBzOi8vb3BlbmFpLm9wZW5haS5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjgxMzA5ODI5LCJleHAiOjE2ODI1MTk0MjksImF6cCI6IlRkSkljYmUxNldvVEh0Tjk1bnl5d2g1RTR5T282SXRHIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBtb2RlbC5yZWFkIG1vZGVsLnJlcXVlc3Qgb3JnYW5pemF0aW9uLnJlYWQgb2ZmbGluZV9hY2Nlc3MifQ.BxA97CFo23P7TWQjw4MQnaR_5LwWpEuf29GB9C6P-WsLRaQmk6TFLey_C3irafIill28VYoNk8iJtSPejHOGebn6aZphMIi3NO0r2EZJyo9r_hFGEC8eegl5lVcLva4-5VV-8-9ywjfZXQNPuxCLorMs8oQTjSXWPh0Nx5wshlfhkliHuW6bv63QSyeFK-y1QR4Oc7q01BBcu1Kw3Pj-QxBbzBpXtbE2wXqZW2FqjzkFhysqH88RlCe-lwHiJbmR7JVBABq1I3LO8kgTavbJExZOIMiOXe-gtgWUknMmu8mLcr_CKb05hMxYuH4m3xkWxCbPdg5MRtTABjGLKgKU1g"
+"access_token": token
 })
 
 def singleton(cls):
@@ -29,7 +36,7 @@ class bot:
                 # print(i)
                 # q = input(f"【user】")
                 # print(q)
-                q = self.q + ",不能出现英语,20个汉字以内。"
+                q = self.q
                 if q == "退出":
                     chatbot.reset_chat()
                     chatbot.clear_conversations()                
@@ -45,6 +52,7 @@ class bot:
                     except Exception as e:
                         return("网络错误，重置失败，请再试一次")   
                 else:
+                    q = self.q + ",不能出现英语,20个汉字以内。"
                     try:
                         # start = time.time()
                         for data in chatbot.ask(q,conversation_id=conversation_id):
