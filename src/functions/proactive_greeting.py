@@ -39,7 +39,7 @@ class ProactiveGreeting(FunctionBase):
         print(f"process feature in ProactiveGreeting at {current_time}")
         proactive_greeting_text = [
             "主人，您的宠物机器人正在这里等您呢！快来和我玩玩吧！",
-            "“嘿，主人，我好想你呀！有什么我能帮助你的吗？",
+            "嘿，主人，我好想你呀！有什么我能帮助你的吗？",
             "哇，主人回来了！我和你玩个小游戏吧！",
         ]
         response = random.choice(proactive_greeting_text)

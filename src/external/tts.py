@@ -2,7 +2,7 @@ import os
 import queue
 import threading
 import time
-
+import re
 import requests
 
 tts_server_url = "http://localhost:21452"
@@ -35,7 +35,10 @@ class TTS:
     def __init__(
         self,
         enable_queue=False,
+        log=True,
     ) -> None:
+        
+        self.log = log
         self.text = ""
         if enable_queue:
             self.queue = queue.Queue()
@@ -64,11 +67,30 @@ class TTS:
         """
 
         if self.thread_text_to_audio.is_alive():
+            if self.log:
+                print(f"[TTS] 正在 tts")
             return 1
         elif self.thread_play_audio.is_alive():
+            if self.log:
+                print(f"[TTS] 正在播放音频")
             return 2
 
         return 0
+
+    def is_chinese_punctuation(self, text:str) -> bool:
+
+        """
+        检查字符串是否只含有中文和标点符号\n
+        如果只含有中文和标点符号，返回真\n
+        反之返回假
+        """
+
+        pattern = re.compile("[\u4e00-\u9fa5，。？！；：‘’“”（）《》【】]")
+        result = pattern.findall(text)
+        if len(result) == len(text):
+            return True
+        else:
+            return False
 
     def run(self, text: str) -> int:
 
@@ -82,6 +104,11 @@ class TTS:
         - 2 失败，正在播放音频中
         - 3 失败，输入文本有误或为空
         """
+
+        if not self.is_chinese_punctuation(text) or not text:
+            if self.log:
+                print(f"[TTS] 输入文本有误：{text}")
+            return 3
 
         status = self.check()
 
@@ -126,9 +153,23 @@ class TTS:
 
 
 if __name__ == "__main__":
+    text1 = "这是一段中文文本，带有标点符号。"
+    text2 = "This is an English text with punctuation marks."
+    text3 = "这是一段包含英文和中文、标点符号的文本，This is a mixed text with Chinese and English, punctuation marks."
+    text4 = ""
+    text5 = ""
+
     tts1 = TTS()
     tts2 = TTS()
     print(id(tts1), id(tts2))
+    
+    print(f"[TTS] Check Chinese Test:")
+
+    print(tts1.is_chinese_punctuation(text1))
+    print(tts1.is_chinese_punctuation(text2))
+    print(tts1.is_chinese_punctuation(text3))
+    print(tts1.is_chinese_punctuation(text4))
+
     while True:
         s = input(">> ")
         if s == "q":
