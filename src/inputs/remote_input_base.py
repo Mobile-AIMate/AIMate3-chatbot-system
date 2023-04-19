@@ -17,6 +17,8 @@ class RemoteInputBase(InputBase):
         super().__init__()
         self.feature_name = feature_name
         self.cached_data, self.cached_timestamp = None, -1
+
+        self.is_connected = False
         self._connect(server_host, server_port)
 
     def get_features(self, current_time: int) -> typing.List[FeatureDict]:
@@ -34,6 +36,9 @@ class RemoteInputBase(InputBase):
         ]
 
     def _fetch(self, current_time: int) -> bool:
+        if not self.is_connected:
+            return False
+
         payload = remoteFetch(current_time)
         self.client_socket.send(json.dumps(payload).encode())
 
@@ -61,11 +66,13 @@ class RemoteInputBase(InputBase):
 
         try:
             self.client_socket.connect((self.host, self.port))
+            self.is_connected = True
         except Exception as e:
             print(f"Failed to connect {e}")
 
     def __del__(self):
-        payload = {'type': 'cmd', 'cmd': 'exit'}
-        self.client_socket.send(json.dumps(payload).encode())
-        self.client_socket.close()
+        if self.is_connected:
+            payload = {"type": "cmd", "cmd": "exit"}
+            self.client_socket.send(json.dumps(payload).encode())
+            self.client_socket.close()
         super().__del__()

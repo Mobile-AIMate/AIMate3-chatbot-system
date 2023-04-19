@@ -1,16 +1,12 @@
-import asyncio
-import signal
-import typing
-import socket
 import json
+import socket
 import threading
-from datetime import datetime
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import typing
 
 GLOBAL_TIMESTAMP = 0
 
-class RemoteASRInput():
+
+class RemoteASRInput:
     def __init__(
         self,
         server_host: str = socket.gethostname(),
@@ -19,10 +15,14 @@ class RemoteASRInput():
     ) -> None:
         super().__init__()
         self.feature_name = feature_name
+        self.features_lock = threading.Lock()
         self.cached_data, self.cached_timestamp = None, -1
+
+        self.is_connected = False
         self._connect(server_host, server_port)
+
         self.processed_time, self.current_time = -1, 0
-        self.lock = threading.Lock()
+
         self.t = threading.Thread(target=RemoteASRInput._fetch, args=(self,))
         self.td = threading.Thread(target=RemoteASRInput._recv_data, args=(self,))
         self.t.setDaemon(True)
@@ -30,14 +30,13 @@ class RemoteASRInput():
         self.td.setDaemon(True)
         self.td.start()
 
-
     def get_features(self, current_time: int) -> typing.List[typing.Any]:
-        with self.lock:
+        with self.features_lock:
             features = [
                 {
-                    'name': self.feature_name,
-                    'data': self.cached_data,
-                    'timestamp': self.cached_timestamp,
+                    "name": self.feature_name,
+                    "data": self.cached_data,
+                    "timestamp": self.cached_timestamp,
                 }
             ]
 
@@ -46,35 +45,35 @@ class RemoteASRInput():
 
     def _fetch(self):
         while True:
-            with self.lock:
-                if self.processed_time < self.current_time:
-                    payload = {'type' : 'fetch', 'timestamp': self.current_time}
-                    self.processed_time = self.current_time
-                    self.client_socket.send(json.dumps(payload).encode())
+            if self.is_connected:
+                with self.features_lock:
+                    if self.processed_time < self.current_time:
+                        payload = {"type": "fetch", "timestamp": self.current_time}
+                        self.processed_time = self.current_time
+                        self.client_socket.send(json.dumps(payload).encode())
                     # print(f'sent {payload}')
-
 
     def _recv_data(self):
         while True:
-            try:
-                data_buffer = self.client_socket.recv(1024)
-                # print(data_buffer)
-                if not data_buffer:
-                    raise ConnectionResetError("服务器断开连接。")
+            if self.is_connected:
+                try:
+                    data_buffer = self.client_socket.recv(1024)
+                    # print(data_buffer)
+                    if not data_buffer:
+                        raise ConnectionResetError("服务器断开连接。")
 
-                data = json.loads(data_buffer.decode())
-                response_payload = data
+                    data = json.loads(data_buffer.decode())
+                    response_payload = data
 
-                self.cached_data, self.cached_timestamp = (
-                    response_payload["data"],
-                    response_payload["timestamp"],
-                )
+                    self.cached_data, self.cached_timestamp = (
+                        response_payload["data"],
+                        response_payload["timestamp"],
+                    )
 
-                # print(response_payload)
-            except Exception as e:
-                # print(e)
-                pass
-        
+                    # print(response_payload)
+                except Exception:
+                    # print(e)
+                    pass
 
     def _connect(
         self, server_host: str = socket.gethostname(), server_port: int = 0
@@ -86,12 +85,12 @@ class RemoteASRInput():
 
         try:
             self.client_socket.connect((self.host, self.port))
+            self.is_connected = True
         except Exception as e:
             print(f"Failed to connect {e}")
 
     def __del__(self):
-        payload = {'type': 'cmd', 'cmd': 'exit'}
-        self.client_socket.send(json.dumps(payload).encode())
-        self.client_socket.close()
-
-        
+        if self.is_connected:
+            payload = {"type": "cmd", "cmd": "exit"}
+            self.client_socket.send(json.dumps(payload).encode())
+            self.client_socket.close()
