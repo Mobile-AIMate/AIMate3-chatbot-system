@@ -2,6 +2,7 @@ import random
 import typing
 
 from functions.function_base import FunctionBase
+from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
 
 
@@ -15,18 +16,20 @@ class ProactiveGreeting(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
 
+    @need_wakeup
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        if not super().check(features, current_time):
-            return False
-
         print(features)
         my_features = [
-            feature for feature in features if feature["name"] == "EmotionRecognition"  # 人脸检测结果
+            feature
+            for feature in features
+            if feature["name"] == "EmotionRecognition"  # 人脸检测结果
         ]
 
         if len(my_features) == 1:
             """如果是刚得到的，就接受，否则拒绝"""
-            if current_time <= my_features[0]["timestamp"] and len(my_features[0]["data"]): # 判断是否检测到人脸
+            if current_time <= my_features[0]["timestamp"] and len(
+                my_features[0]["data"]
+            ):  # 判断是否检测到人脸
                 return True
             else:
                 return False
