@@ -15,8 +15,9 @@ class FunctionBase:
         raise NotImplementedError
 
     # wake up in per call
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        wakeup(current_time)
+        raise NotImplementedError
 
     @property
     def priority(self) -> int:

@@ -4,6 +4,7 @@ import typing
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.wakeup import wakeup
 
 
 class WakeUpGreeting(FunctionBase):
@@ -37,9 +38,8 @@ class WakeUpGreeting(FunctionBase):
             else:
                 return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
         print(f"process feature in WakeUpGreeting at {current_time}")
         wake_up_text = [
             "主人我在，有什么可以帮助您的吗？",

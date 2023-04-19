@@ -3,6 +3,7 @@ import typing
 from external.tts import TTS
 from functions.function_base import FunctionBase
 from utils.feature import FeatureDict
+from utils.wakeup import wakeup
 
 
 class FunctionHandGesture(FunctionBase):
@@ -33,6 +34,7 @@ class FunctionHandGesture(FunctionBase):
         if self.tts.run(tts_text) != 0:
             return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
         super().call(features, current_time)
 

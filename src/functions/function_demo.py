@@ -3,6 +3,7 @@ import typing
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.wakeup import wakeup
 
 
 class FunctionDemo(FunctionBase):
@@ -25,7 +26,6 @@ class FunctionDemo(FunctionBase):
         else:
             return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
         print(f"process feature in FunctionDemo at {current_time}")

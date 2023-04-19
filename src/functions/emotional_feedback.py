@@ -4,6 +4,7 @@ from external.tts import TTS
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.wakeup import wakeup
 
 
 class EmotionalFeedback(FunctionBase):
@@ -37,9 +38,8 @@ class EmotionalFeedback(FunctionBase):
         else:
             return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
         print(f"process feature in EmotionalFeedback at {current_time}")
         emotional_feedback_text = {
             "Angry": "主人，我注意到你现在感到很生气。如果你想发泄，可以尝试向我说出你的感受，我会一直在你身边支持你的",

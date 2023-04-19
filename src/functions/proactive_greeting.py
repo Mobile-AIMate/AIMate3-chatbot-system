@@ -4,6 +4,7 @@ import typing
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.wakeup import wakeup
 
 
 class ProactiveGreeting(FunctionBase):
@@ -36,9 +37,8 @@ class ProactiveGreeting(FunctionBase):
         else:
             return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
         print(f"process feature in ProactiveGreeting at {current_time}")
         proactive_greeting_text = [
             "主人，您的宠物机器人正在这里等您呢！快来和我玩玩吧！",
