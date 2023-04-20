@@ -3,9 +3,11 @@ import typing
 from external.tts import TTS
 from functions.function_base import FunctionBase
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.wakeup import wakeup
 
 
+@add_logger
 class FunctionHandGesture(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
@@ -36,9 +38,7 @@ class FunctionHandGesture(FunctionBase):
 
     @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
-        print(f"process feature in FunctionDemo at {current_time}")
+        self.logger.debug(f"process feature in FunctionDemo at {current_time}")
         my_feature = [
             feature for feature in features if feature["name"] == "HandGesture"
         ][0]

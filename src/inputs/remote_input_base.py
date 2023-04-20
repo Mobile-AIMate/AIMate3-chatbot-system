@@ -4,9 +4,11 @@ import typing
 
 from inputs.input_base import InputBase
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.remote_payload import RemotePayload, remoteFetch
 
 
+@add_logger
 class RemoteInputBase(InputBase):
     def __init__(
         self,
@@ -25,7 +27,7 @@ class RemoteInputBase(InputBase):
         try:
             self._fetch(current_time)
         except Exception as e:
-            print(f"Failed to fetch {e}")
+            self.logger.warning(f"Failed to fetch {e}")
 
         return [
             FeatureDict(
@@ -67,8 +69,8 @@ class RemoteInputBase(InputBase):
         try:
             self.client_socket.connect((self.host, self.port))
             self.is_connected = True
-        except Exception as e:
-            print(f"Failed to connect {e}")
+        except Exception:
+            self.logger.error("Failed to connect.", exc_info=True)
 
     def __del__(self):
         if self.is_connected:

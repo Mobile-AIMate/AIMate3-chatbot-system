@@ -3,15 +3,18 @@ import socket
 import threading
 import typing
 
+from utils.logger import add_logger
+
 GLOBAL_TIMESTAMP = 0
 
 
+@add_logger
 class RemoteASRInput:
     def __init__(
         self,
         server_host: str = socket.gethostname(),
         server_port: int = 2345,
-        feature_name: str = "remote-base",
+        feature_name: str = "RemoteASR",
     ) -> None:
         super().__init__()
         self.feature_name = feature_name
@@ -71,8 +74,8 @@ class RemoteASRInput:
                     )
 
                     # print(response_payload)
-                except Exception:
-                    # print(e)
+                except Exception as e:
+                    self.logger.warning(e)
                     pass
 
     def _connect(
@@ -86,8 +89,8 @@ class RemoteASRInput:
         try:
             self.client_socket.connect((self.host, self.port))
             self.is_connected = True
-        except Exception as e:
-            print(f"Failed to connect {e}")
+        except Exception:
+            self.logger.error("Failed to connect.", exc_info=True)
 
     def __del__(self):
         if self.is_connected:

@@ -2,6 +2,9 @@ import typing
 from functools import reduce
 
 from utils.feature import FeatureDict
+from utils.logger import get_logger
+
+logger = get_logger("check_condition", "utils.check_condition")
 
 
 def need_wakeup(func=None, negative=False, strict=False):
@@ -39,7 +42,7 @@ def need_wakeup(func=None, negative=False, strict=False):
         # non-strict mode
 
         if len(wakeup_features) != 1:
-            print(
+            logger.warn(
                 f"There should be only one wakeup feature,\
                     but got {len(wakeup_features)}"
             )

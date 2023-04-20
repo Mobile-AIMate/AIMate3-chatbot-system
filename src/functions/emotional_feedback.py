@@ -4,9 +4,11 @@ from external.tts import TTS
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.wakeup import wakeup
 
 
+@add_logger
 class EmotionalFeedback(FunctionBase):
     """
     情绪反馈功能：
@@ -20,7 +22,7 @@ class EmotionalFeedback(FunctionBase):
 
     @need_wakeup
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        print(features)
+        self.logger.debug(features)
         my_features = [
             feature
             for feature in features
@@ -40,7 +42,7 @@ class EmotionalFeedback(FunctionBase):
 
     @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        print(f"process feature in EmotionalFeedback at {current_time}")
+        self.logger.debug(f"process feature in EmotionalFeedback at {current_time}")
         emotional_feedback_text = {
             "Angry": "主人，我注意到你现在感到很生气。如果你想发泄，可以尝试向我说出你的感受，我会一直在你身边支持你的",
             "Happy": "看到主人这么开心，我也感到很高兴！",
@@ -58,8 +60,8 @@ class EmotionalFeedback(FunctionBase):
             this_feature[0]["data"][0]["emotion_label"]
         ]  # this_feature[0]["data"] = [{"emotion_label":""}]
         # 使用情感label作为key
-        print(response)
-        print(f'======{this_feature[0]["data"][0]["emotion_label"]}======')
+        self.logger.debug(response)
+        self.logger.debug(f'======{this_feature[0]["data"][0]["emotion_label"]}======')
         res = self.tts.run(response)
         return res
         # print(response)

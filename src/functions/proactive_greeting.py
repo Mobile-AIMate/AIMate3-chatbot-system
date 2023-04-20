@@ -4,9 +4,11 @@ import typing
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.wakeup import wakeup
 
 
+@add_logger
 class ProactiveGreeting(FunctionBase):
     """
     主动问候功能：
@@ -19,7 +21,6 @@ class ProactiveGreeting(FunctionBase):
 
     @need_wakeup
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        print(features)
         my_features = [
             feature
             for feature in features
@@ -39,12 +40,12 @@ class ProactiveGreeting(FunctionBase):
 
     @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        print(f"process feature in ProactiveGreeting at {current_time}")
+        self.logger.debug(f"process feature in ProactiveGreeting at {current_time}")
         proactive_greeting_text = [
             "主人，您的宠物机器人正在这里等您呢！快来和我玩玩吧！",
             "嘿，主人，我好想你呀！有什么我能帮助你的吗？",
             "哇，主人回来了！我和你玩个小游戏吧！",
         ]
         response = random.choice(proactive_greeting_text)
-        print(response)
+        self.logger.debug(response)
         return response

@@ -4,9 +4,11 @@ import typing
 from functions.function_base import FunctionBase
 from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.wakeup import wakeup
 
 
+@add_logger
 class WakeUpGreeting(FunctionBase):
     """
     唤醒词问候功能：
@@ -19,7 +21,6 @@ class WakeUpGreeting(FunctionBase):
 
     @need_wakeup(negative=True)
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        print(features)
         my_features = [
             feature
             for feature in features
@@ -40,12 +41,12 @@ class WakeUpGreeting(FunctionBase):
 
     @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        print(f"process feature in WakeUpGreeting at {current_time}")
+        self.logger.debug(f"process feature in WakeUpGreeting at {current_time}")
         wake_up_text = [
             "主人我在，有什么可以帮助您的吗？",
             "主人，你好，需要我做些什么吗？",
             "主人，请告诉我您需要什么帮助，我会尽力满足您的需求。",
         ]
         response = random.choice(wake_up_text)
-        print(response)
+        self.logger.debug(response)
         return response

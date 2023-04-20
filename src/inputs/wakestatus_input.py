@@ -2,9 +2,11 @@ import typing
 
 from inputs.input_base import InputBase
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.wakeup import get_wakeup_status
 
 
+@add_logger
 class WakeupStatus(InputBase):
     def __init__(self) -> None:
         super().__init__()
