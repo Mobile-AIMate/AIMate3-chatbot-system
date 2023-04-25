@@ -11,7 +11,7 @@ from utils.wakeup import wakeup
 class FunctionHandGesture(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
-        self.handgesture_response = {"good": "好", "bad": "坏", "5": "挥手", "2": "耶"}
+        self.handgesture_response = {"good": "谢谢主人我会一直陪伴你的", "bad": "对不起主人我会继续努力的", "5": "嗨主人你来啦我们一起玩吧", "2": "主人开心我也开心哦", "rock": "让我们一起摇滚吧", "f": "要保持文明礼貌哦", "6": "主人你也很棒哦", "8": "主人拜拜期待下次再见哦", "0": "主人不要生气哦我会一直支持你的"}
         self.last_call_time = 0
         self.interval_time = 20
         self.tts = TTS()
@@ -19,7 +19,6 @@ class FunctionHandGesture(FunctionBase):
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
         if current_time - self.last_call_time < self.interval_time:
             return False
-
         my_features = [
             feature for feature in features if feature["name"] == "HandGesture"
         ]
@@ -45,6 +44,7 @@ class FunctionHandGesture(FunctionBase):
         response = self.handgesture_response[
             my_feature["data"]["gesture"]
         ]  # 使用label作为key
+        self.logger.debug(response)                
         self.last_call_time = my_feature["timestamp"]
         res = self.tts.run(response)
         return res
