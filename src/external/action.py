@@ -8,6 +8,19 @@ from serial.tools.list_ports_linux import SysFS
 __CACHED_CONNECTION: Optional[serial.Serial] = None
 
 
+class EmotionType(IntEnum):
+    """
+    表情类型
+    """
+
+    DEFAULT = 0x00
+    DISDAIN = 0x0B  # 不屑
+    ANGRY = 0x0C
+    SCARED = 0x0D
+    SAD = 0x0E
+    HAPPY = 0x0F
+
+
 class MachineryState(IntEnum):
     DEFAULT = 0x00
     FORWARD = 0x01
@@ -30,19 +43,6 @@ class MachineryData:
 
     def __bytes__(self) -> bytes:
         return bytes([self.state, self.speed])
-
-
-class EmotionType(IntEnum):
-    """
-    表情类型
-    """
-
-    DEFAULT = 0x00
-    DISDAIN = 0x0B  # 不屑
-    ANGRY = 0x0C
-    SCARED = 0x0D
-    SAD = 0x0E
-    HAPPY = 0x0F
 
 
 def build_frame_data(
