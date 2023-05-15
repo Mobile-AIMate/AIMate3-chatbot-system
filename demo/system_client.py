@@ -1,9 +1,9 @@
 import asyncio
-import signal
-import typing
-import socket
 import json
+import signal
+import socket
 import threading
+import typing
 from datetime import datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -14,7 +14,7 @@ GLOBAL_TIMESTAMP = 0
 # inputdemo.get_features(timestamp)  # get and update timestamp
 
 
-class RemoteInputDemo():
+class RemoteInputDemo:
     def __init__(
         self,
         server_host: str = socket.gethostname(),
@@ -34,14 +34,13 @@ class RemoteInputDemo():
         self.td.setDaemon(True)
         self.td.start()
 
-
     def get_features(self, current_time: int) -> typing.List[typing.Any]:
         with self.lock:
             features = [
                 {
-                    'name': self.feature_name,
-                    'data': self.cached_data,
-                    'timestamp': self.cached_timestamp,
+                    "name": self.feature_name,
+                    "data": self.cached_data,
+                    "timestamp": self.cached_timestamp,
                 }
             ]
 
@@ -52,11 +51,10 @@ class RemoteInputDemo():
         while True:
             with self.lock:
                 if self.processed_time < self.current_time:
-                    payload = {'type' : 'fetch', 'timestamp': self.current_time}
+                    payload = {"type": "fetch", "timestamp": self.current_time}
                     self.processed_time = self.current_time
                     self.client_socket.send(json.dumps(payload).encode())
-                    print(f'sent {payload}')
-
+                    print(f"sent {payload}")
 
     def _recv_data(self):
         while True:
@@ -75,10 +73,9 @@ class RemoteInputDemo():
                 )
 
                 print(response_payload)
-            except Exception as e:
+            except Exception:
                 # print(e)
                 pass
-        
 
     def _connect(
         self, server_host: str = socket.gethostname(), server_port: int = 0
@@ -94,16 +91,13 @@ class RemoteInputDemo():
             print(f"Failed to connect {e}")
 
     def __del__(self):
-        payload = {'type': 'cmd', 'cmd': 'exit'}
+        payload = {"type": "cmd", "cmd": "exit"}
         self.client_socket.send(json.dumps(payload).encode())
         self.client_socket.close()
 
 
-
 # 循环的每次执行
-async def poll_controller(
-    inputs_, functions_
-):
+async def poll_controller(inputs_, functions_):
     global GLOBAL_TIMESTAMP
     try:
         current_timestamp = GLOBAL_TIMESTAMP
