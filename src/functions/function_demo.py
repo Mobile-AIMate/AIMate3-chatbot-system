@@ -1,15 +1,19 @@
 import typing
 
 from functions.function_base import FunctionBase
+from utils.check_condition import need_wakeup
 from utils.feature import FeatureDict
+from utils.logger import add_logger
+from utils.wakeup import wakeup
 
 
+@add_logger
 class FunctionDemo(FunctionBase):
     def __init__(self) -> None:
         super().__init__(priority=0)
 
+    @need_wakeup
     def check(self, features: typing.List[FeatureDict], current_time: int) -> bool:
-        print(features)
         my_features = [
             feature for feature in features if feature["name"] == "remote-demo"
         ]
@@ -23,7 +27,6 @@ class FunctionDemo(FunctionBase):
         else:
             return False
 
+    @wakeup
     def call(self, features: typing.List[FeatureDict], current_time: int):
-        super().call(features, current_time)
-
-        print(f"process feature in FunctionDemo at {current_time}")
+        self.logger.debug(f"process feature in FunctionDemo at {current_time}")

@@ -1,7 +1,7 @@
 import asyncio
+import logging
 import signal
 import typing
-from datetime import datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -11,6 +11,9 @@ from functions.function_base import FunctionBase
 from inputs.input_base import InputBase
 from utils import ts_counter
 from utils.instantiation import instantiate
+from utils.logger import get_logger
+
+logger = get_logger("main", "main", level=logging.DEBUG)
 
 
 # 循环的每次执行
@@ -19,6 +22,7 @@ async def poll_controller(
 ):
     try:
         current_timestamp = ts_counter.get_timestamp()
+        logger.info(f"poll_controller {current_timestamp}")
 
         input_features_lists = [inp.get_features(current_timestamp) for inp in inputs_]
         input_features = [
@@ -27,17 +31,23 @@ async def poll_controller(
             for feature in features_list
         ]
 
+        logger.debug(f"input_features: {input_features}")
+
         check_results: typing.List[typing.Tuple[FunctionBase, bool]] = [
             (f, f.check(input_features, current_timestamp)) for f in functions_
         ]
         check_results.sort(key=lambda r: r[0].priority, reverse=True)
+
+        logger.info(
+            f"check_results: {[f.__class__.__name__ for f, cr in check_results if cr]}"
+        )
 
         for f, cr in check_results:
             if cr:
                 f.call(input_features, current_timestamp)
                 break
 
-        # print(f"poll_controller {datetime.now()} {current_timestamp}")
+        logger.info("========================================")
         ts_counter.increment()
     except asyncio.CancelledError:
         pass
@@ -64,11 +74,16 @@ def main():
     scheduler.start()
 
     def close_all():
-        print("exit.")
-        for job in scheduler.get_jobs():
-            job.remove()
-        loop.stop()
-        scheduler.shutdown()
+        try:
+            logger.warning("exit.")
+            for job in scheduler.get_jobs():
+                job.remove()
+            loop.stop()
+            scheduler.shutdown()
+        except Exception as e:
+            logger.error(f"An error occurred during shutdown: {e}")
+        finally:
+            loop.stop()
 
     for sig in (signal.SIGTERM, signal.SIGINT):
         loop.add_signal_handler(sig, close_all)

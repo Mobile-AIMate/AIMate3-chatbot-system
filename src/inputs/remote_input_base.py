@@ -4,9 +4,11 @@ import typing
 
 from inputs.input_base import InputBase
 from utils.feature import FeatureDict
+from utils.logger import add_logger
 from utils.remote_payload import RemotePayload, remoteFetch
 
 
+@add_logger
 class RemoteInputBase(InputBase):
     def __init__(
         self,
@@ -17,13 +19,15 @@ class RemoteInputBase(InputBase):
         super().__init__()
         self.feature_name = feature_name
         self.cached_data, self.cached_timestamp = None, -1
+
+        self.is_connected = False
         self._connect(server_host, server_port)
 
     def get_features(self, current_time: int) -> typing.List[FeatureDict]:
         try:
             self._fetch(current_time)
         except Exception as e:
-            print(f"Failed to fetch {e}")
+            self.logger.warning(f"Failed to fetch {e}")
 
         return [
             FeatureDict(
@@ -34,6 +38,9 @@ class RemoteInputBase(InputBase):
         ]
 
     def _fetch(self, current_time: int) -> bool:
+        if not self.is_connected:
+            return False
+
         payload = remoteFetch(current_time)
         self.client_socket.send(json.dumps(payload).encode())
 
@@ -61,11 +68,13 @@ class RemoteInputBase(InputBase):
 
         try:
             self.client_socket.connect((self.host, self.port))
-        except Exception as e:
-            print(f"Failed to connect {e}")
+            self.is_connected = True
+        except Exception:
+            self.logger.error("Failed to connect.", exc_info=True)
 
     def __del__(self):
-        payload = {'type': 'cmd', 'cmd': 'exit'}
-        self.client_socket.send(json.dumps(payload).encode())
-        self.client_socket.close()
+        if self.is_connected:
+            payload = {"type": "cmd", "cmd": "exit"}
+            self.client_socket.send(json.dumps(payload).encode())
+            self.client_socket.close()
         super().__del__()
