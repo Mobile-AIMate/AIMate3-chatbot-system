@@ -1,15 +1,12 @@
 from revChatGPT.V1 import Chatbot
-import time
-import json
 
-f = open('./token.json','r')
+f = open("./token.json", "r")
 
 content = f.read()
-token = content['access_token']
+token = content["access_token"]
 
-chatbot = Chatbot(config={
-"access_token": token
-})
+chatbot = Chatbot(config={"access_token": token})
+
 
 def singleton(cls):
     _instance = {}
@@ -32,14 +29,14 @@ class bot:
         i = 1
         conversation_id = 0
         while 1:
-            if i%5 != 0:
+            if i % 5 != 0:
                 # print(i)
                 # q = input(f"【user】")
                 # print(q)
                 q = self.q
                 if q == "退出":
                     chatbot.reset_chat()
-                    chatbot.clear_conversations()                
+                    chatbot.clear_conversations()
                     # print("*********退出程序**********")
                     break
                 elif q == "重置":
@@ -49,22 +46,22 @@ class bot:
                         # print("**************************")
                         # return("重置对话")
                         # print("**************************")
-                    except Exception as e:
-                        return("网络错误，重置失败，请再试一次")   
+                    except Exception:
+                        return "网络错误，重置失败，请再试一次"
                 else:
                     q = self.q + ",不能出现英语,20个汉字以内。"
                     try:
                         # start = time.time()
-                        for data in chatbot.ask(q,conversation_id=conversation_id):
-                            response = data['message']
+                        for data in chatbot.ask(q, conversation_id=conversation_id):
+                            response = data["message"]
                             # print(f"【ChatGPT】{response}")
                         return response
                         # end = time.time()
                         # print("time:",end - start)
                         i += 1
-                    except Exception as e:
+                    except Exception:
                         # print(e)
-                        return("网络错误，再试一次")
+                        return "网络错误，再试一次"
 
             else:
                 i = 1
@@ -74,10 +71,9 @@ class bot:
                     # print("**************************")
                     # print("*********重置对话**********")
                     # print("**************************")
-                except Exception as e:
-                    return("网络错误，重置失败，请再试一次")   
+                except Exception:
+                    return "网络错误，重置失败，请再试一次"
 
-    
 
 # print("Chatbot: ")
 # prev_text = ""
@@ -89,8 +85,8 @@ class bot:
 #     print(message, end="", flush=True)
 #     prev_text = data["message"]
 # print()
-if __name__ == '__main__':
-    chat = bot(user='user')
+if __name__ == "__main__":
+    chat = bot(user="user")
     chat.q = "你好"
     answer = chat.ask_gpt()
     print(answer)
