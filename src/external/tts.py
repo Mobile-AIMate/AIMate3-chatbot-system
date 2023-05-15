@@ -1,11 +1,12 @@
 import os
 import queue
+import re
 import threading
 import time
-import re
+
 import requests
 
-tts_server_url = "http://localhost:21452"
+tts_server_url = "http://localhost:21452/tts"
 default_audio_path = "~/project/PaddleSpeech/demos/TTSArmLinux/output/tts.wav"
 
 
@@ -37,7 +38,7 @@ class TTS:
         enable_queue=False,
         log=True,
     ) -> None:
-        
+
         self.log = log
         self.text = ""
         if enable_queue:
@@ -68,16 +69,16 @@ class TTS:
 
         if self.thread_text_to_audio.is_alive():
             if self.log:
-                print(f"[TTS] 正在 tts")
+                print("[TTS] 正在 tts")
             return 1
         elif self.thread_play_audio.is_alive():
             if self.log:
-                print(f"[TTS] 正在播放音频")
+                print("[TTS] 正在播放音频")
             return 2
 
         return 0
 
-    def is_chinese_punctuation(self, text:str) -> bool:
+    def is_chinese_punctuation(self, text: str) -> bool:
 
         """
         检查字符串是否只含有中文和标点符号\n
@@ -114,7 +115,7 @@ class TTS:
 
         if status:
             return status
-        
+
         self.text = text
         return status
 
@@ -155,15 +156,18 @@ class TTS:
 if __name__ == "__main__":
     text1 = "这是一段中文文本，带有标点符号。"
     text2 = "This is an English text with punctuation marks."
-    text3 = "这是一段包含英文和中文、标点符号的文本，This is a mixed text with Chinese and English, punctuation marks."
+    text3 = (
+        "这是一段包含英文和中文、标点符号的文本，"
+        "This is a mixed text with Chinese and English, punctuation marks."
+    )
     text4 = ""
     text5 = ""
 
     tts1 = TTS()
     tts2 = TTS()
     print(id(tts1), id(tts2))
-    
-    print(f"[TTS] Check Chinese Test:")
+
+    print("[TTS] Check Chinese Test:")
 
     print(tts1.is_chinese_punctuation(text1))
     print(tts1.is_chinese_punctuation(text2))
