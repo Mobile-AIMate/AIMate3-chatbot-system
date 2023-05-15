@@ -1,21 +1,17 @@
-import asyncio
-import signal
-import typing
-import socket
 import json
+import socket
 import threading
-from datetime import datetime
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import typing
 
 GLOBAL_TIMESTAMP = 0
 
-class RemoteASRInput():
+
+class RemoteASRInput:
     def __init__(
         self,
         server_host: str = socket.gethostname(),
         server_port: int = 2345,
-        feature_name: str = "remote-base",
+        feature_name: str = "remote-asr",
     ) -> None:
         super().__init__()
         self.feature_name = feature_name
@@ -30,14 +26,13 @@ class RemoteASRInput():
         self.td.setDaemon(True)
         self.td.start()
 
-
     def get_features(self, current_time: int) -> typing.List[typing.Any]:
         with self.lock:
             features = [
                 {
-                    'name': self.feature_name,
-                    'data': self.cached_data,
-                    'timestamp': self.cached_timestamp,
+                    "name": self.feature_name,
+                    "data": self.cached_data,
+                    "timestamp": self.cached_timestamp,
                 }
             ]
 
@@ -48,11 +43,10 @@ class RemoteASRInput():
         while True:
             with self.lock:
                 if self.processed_time < self.current_time:
-                    payload = {'type' : 'fetch', 'timestamp': self.current_time}
+                    payload = {"type": "fetch", "timestamp": self.current_time}
                     self.processed_time = self.current_time
                     self.client_socket.send(json.dumps(payload).encode())
                     # print(f'sent {payload}')
-
 
     def _recv_data(self):
         while True:
@@ -71,10 +65,9 @@ class RemoteASRInput():
                 )
 
                 # print(response_payload)
-            except Exception as e:
+            except Exception:
                 # print(e)
                 pass
-        
 
     def _connect(
         self, server_host: str = socket.gethostname(), server_port: int = 0
@@ -90,8 +83,6 @@ class RemoteASRInput():
             print(f"Failed to connect {e}")
 
     def __del__(self):
-        payload = {'type': 'cmd', 'cmd': 'exit'}
+        payload = {"type": "cmd", "cmd": "exit"}
         self.client_socket.send(json.dumps(payload).encode())
         self.client_socket.close()
-
-        

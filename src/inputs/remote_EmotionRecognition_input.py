@@ -3,7 +3,7 @@ import socket
 from inputs.remote_input_base import RemoteInputBase
 
 
-class remoteEmotionRecognition(RemoteInputBase):
+class RemoteEmotionRecognition(RemoteInputBase):
     def __init__(
         self, server_host: str = socket.gethostname(), server_port: int = 6969
     ) -> None:

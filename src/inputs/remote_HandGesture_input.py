@@ -3,7 +3,7 @@ import socket
 from inputs.remote_input_base import RemoteInputBase
 
 
-class remoteHandGesture(RemoteInputBase):
+class RemoteHandGesture(RemoteInputBase):
     def __init__(
         self, server_host: str = socket.gethostname(), server_port: int = 7700
     ) -> None:
